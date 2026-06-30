@@ -1,11 +1,10 @@
 export async function onRequest(context) {
-    // 1. Grab all possible parameters from the frontend
     const url = new URL(context.request.url);
     const query = url.searchParams.get('q') || '';
     const genre = url.searchParams.get('genre') || '';
     const year = url.searchParams.get('year') || '';
+    const page = url.searchParams.get('page') || '1'; // <-- NEW: Grab the page
 
-    // 2. If the user clicked search with completely empty fields, stop here
     if (!query && !genre && !year) {
         return new Response(JSON.stringify({ error: "No search parameters provided" }), { 
             status: 400,
@@ -16,16 +15,14 @@ export async function onRequest(context) {
     const API_KEY = context.env.TMDB_KEY;
     let tmdbUrl = '';
 
-    // 3. THE TRAFFIC COP LOGIC
+    // Append the page parameter to both TMDB URLs
     if (query) {
-        // If they typed a title, we MUST use the Search endpoint. 
-        tmdbUrl = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`;
+        tmdbUrl = `https://api.themoviedb.org/3/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&include_adult=false&page=${page}`;
         if (year) {
             tmdbUrl += `&primary_release_year=${year}`;
         }
     } else {
-        // If they left the title blank and used dropdowns, use the Discover endpoint.
-        tmdbUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&include_adult=false&sort_by=popularity.desc`;
+        tmdbUrl = `https://api.themoviedb.org/3/discover/movie?api_key=${API_KEY}&include_adult=false&sort_by=popularity.desc&page=${page}`;
         if (genre) {
             tmdbUrl += `&with_genres=${genre}`;
         }
@@ -34,7 +31,6 @@ export async function onRequest(context) {
         }
     }
 
-    // 4. Fetch the data and return it safely
     try {
         const response = await fetch(tmdbUrl);
         const data = await response.json();
