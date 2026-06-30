@@ -1,34 +1,36 @@
 // --- 1. DOM Elements ---
 const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
+const genreSelect = document.getElementById('genre-select'); 
+const yearInput = document.getElementById('year-input');     
 const movieGrid = document.getElementById('movie-grid');
 
 // --- 2. Event Listeners ---
-// Listen for the form submission (clicking the button or hitting Enter)
 searchForm.addEventListener('submit', (e) => {
-    e.preventDefault(); // Prevents the page from refreshing
-    const searchTerm = searchInput.value.trim();
+    e.preventDefault(); 
     
-    if (searchTerm) {
-        fetchMovies(searchTerm);
+    // Grab the values from all three inputs
+    const searchTerm = searchInput.value.trim();
+    const genreId = genreSelect.value;
+    const releaseYear = yearInput.value.trim();
+    
+    // As long as at least ONE field has something in it, run the search
+    if (searchTerm || genreId || releaseYear) {
+        fetchMovies(searchTerm, genreId, releaseYear);
     }
 });
 
 // --- 3. Fetch Logic ---
-// Async function to grab data from our secure Cloudflare backend
-async function fetchMovies(query) {
-    // Clear the grid and show a loading state
+async function fetchMovies(query, genre, year) {
     movieGrid.innerHTML = '<p>Loading movies...</p>';
     
     try {
-        // Construct the URL to hit our OWN backend function, passing the query
-        const url = `/movies?q=${encodeURIComponent(query)}`;
+        // Construct the URL to pass ALL variables to our backend
+        const url = `/movies?q=${encodeURIComponent(query)}&genre=${genre}&year=${year}`;
         
-        // Make the request to our Cloudflare backend
         const response = await fetch(url);
         const data = await response.json();
         
-        // Pass the results to our rendering function
         if (data.results) {
             renderMovies(data.results);
         } else {
@@ -42,22 +44,17 @@ async function fetchMovies(query) {
 }
 
 // --- 4. Render Logic ---
-// Function to build the HTML for each movie card
 function renderMovies(movies) {
-    // If no movies come back, show a friendly message
     if (movies.length === 0) {
         movieGrid.innerHTML = '<p>No movies found. Try another search!</p>';
         return;
     }
 
-    // Map through the array of movies and create an HTML string for each
     const htmlString = movies.map(movie => {
-        // Handle movies that might not have a poster image
         const imagePath = movie.poster_path 
             ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
             : 'https://via.placeholder.com/500x750?text=No+Image';
             
-        // Extract just the year from the release_date (e.g., "2023-10-24" -> "2023")
         const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'Unknown Year';
 
         return `
@@ -69,8 +66,7 @@ function renderMovies(movies) {
                 </div>
             </div>
         `;
-    }).join(''); // Join the array of strings into one big block of HTML
+    }).join(''); 
 
-    // Inject the final HTML into the grid
     movieGrid.innerHTML = htmlString;
 }
