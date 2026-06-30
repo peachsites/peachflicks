@@ -3,10 +3,6 @@ const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
 const movieGrid = document.getElementById('movie-grid');
 
-// Your TMDB API Key (We will secure this later)
-const API_KEY = '96d1eab5f82aff93f784687d5552dcb8';
-const BASE_URL = 'https://api.themoviedb.org/3';
-
 // --- 2. Event Listeners ---
 // Listen for the form submission (clicking the button or hitting Enter)
 searchForm.addEventListener('submit', (e) => {
@@ -19,21 +15,25 @@ searchForm.addEventListener('submit', (e) => {
 });
 
 // --- 3. Fetch Logic ---
-// Async function to grab data from TMDB
+// Async function to grab data from our secure Cloudflare backend
 async function fetchMovies(query) {
     // Clear the grid and show a loading state
     movieGrid.innerHTML = '<p>Loading movies...</p>';
     
     try {
-        // Construct the URL for the Search API
-        const url = `${BASE_URL}/search/movie?api_key=${API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`;
+        // Construct the URL to hit our OWN backend function, passing the query
+        const url = `/movies?q=${encodeURIComponent(query)}`;
         
-        // Make the request and wait for the response
+        // Make the request to our Cloudflare backend
         const response = await fetch(url);
         const data = await response.json();
         
         // Pass the results to our rendering function
-        renderMovies(data.results);
+        if (data.results) {
+            renderMovies(data.results);
+        } else {
+            movieGrid.innerHTML = '<p>No movies found.</p>';
+        }
         
     } catch (error) {
         console.error("Error fetching data:", error);
