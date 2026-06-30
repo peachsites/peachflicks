@@ -4,7 +4,7 @@ const searchInput = document.getElementById('search-input');
 const movieGrid = document.getElementById('movie-grid');
 
 // Your TMDB API Key (We will secure this later)
-const API_KEY = 96d1eab5f82aff93f784687d5552dcb8;
+const API_KEY = '96d1eab5f82aff93f784687d5552dcb8';
 const BASE_URL = 'https://api.themoviedb.org/3';
 
 // --- 2. Event Listeners ---
