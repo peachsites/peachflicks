@@ -1,165 +1,91 @@
-/* --- Base Variables & Reset --- */
-:root {
-    --peach-primary: #FF9A76;
-    --peach-hover: #FF7F50;
-    --dark-bg: #121212;
-    --card-bg: #1E1E1E;
-    --text-light: #F5F5F5;
-    --text-muted: #A0A0A0;
-    --border-radius: 8px;
-}
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-    font-family: system-ui, -apple-system, sans-serif;
-}
-
-body {
-    background-color: var(--dark-bg);
-    color: var(--text-light);
+/* --- Modal Styling --- */
+.modal {
     display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
-
-/* --- Header --- */
-.app-header {
-    text-align: center;
-    padding: 2rem 1rem;
-    background-color: var(--card-bg);
-    border-bottom: 2px solid var(--peach-primary);
-}
-
-.app-header h1 {
-    color: var(--peach-primary);
-    font-size: 2.5rem;
-    margin-bottom: 0.5rem;
-}
-
-/* --- Controls & Form --- */
-.controls-container {
-    padding: 2rem 1rem;
-    max-width: 900px;
-    margin: 0 auto;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
     width: 100%;
-}
-
-.search-form {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
     justify-content: center;
+    align-items: center;
 }
 
-.search-form input,
-.search-form select {
-    padding: 0.75rem 1rem;
-    border: 1px solid #333;
-    border-radius: var(--border-radius);
-    background-color: var(--card-bg);
-    color: var(--text-light);
-    font-size: 1rem;
-    flex-grow: 1;
-    min-width: 150px;
+.modal.hidden {
+    display: none;
 }
 
-.search-form button {
-    padding: 0.75rem 1.5rem;
-    background-color: var(--peach-primary);
-    color: #121212;
-    border: none;
-    border-radius: var(--border-radius);
-    font-size: 1rem;
+.modal-content {
+    background-color: #1a1a1a;
+    color: #ffffff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 700px;
+    position: relative;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+.modal-body {
+    display: flex;
+    gap: 30px;
+}
+
+.modal-body img {
+    width: 200px;
+    border-radius: 8px;
+    object-fit: cover;
+}
+
+.modal-info h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 1.8rem;
+}
+
+#modal-meta {
+    color: #ffb4a2; /* A peach-like accent color */
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+#modal-overview {
+    line-height: 1.6;
+    color: #cccccc;
+}
+
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    color: #888;
+    font-size: 30px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color 0.2s ease;
+    transition: color 0.2s;
 }
 
-.search-form button:hover {
-    background-color: var(--peach-hover);
+.close-btn:hover {
+    color: #ffffff;
 }
 
-/* --- Movie Grid --- */
-.movie-container {
-    flex-grow: 1;
-    padding: 0 1rem 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    width: 100%;
-}
-
-.movie-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1.5rem;
-}
-
-/* Dummy styling for injected JS cards */
+/* Make movie cards look clickable */
 .movie-card {
-    background-color: var(--card-bg);
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    transition: transform 0.2s ease;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .movie-card:hover {
     transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
 }
 
-.movie-card img {
-    width: 100%;
-    height: 300px;
-    object-fit: cover;
-}
-
-.movie-info {
-    padding: 1rem;
-}
-
-.movie-title {
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-}
-
-.movie-year {
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-
-/* --- Pagination --- */
-.pagination-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 1.5rem;
-    padding: 2rem 1rem;
-}
-
-.btn-pagination {
-    padding: 0.5rem 1rem;
-    background-color: #333;
-    color: var(--text-light);
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-}
-
-.btn-pagination:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-}
-
-/* --- Footer --- */
-.app-footer {
-    text-align: center;
-    padding: 2rem 1rem;
-    background-color: var(--card-bg);
-    margin-top: auto;
-}
-
-.tmdb-logo {
-    width: 150px;
-    margin-bottom: 1rem;
+/* Mobile responsiveness for the modal */
+@media (max-width: 600px) {
+    .modal-body {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
 }

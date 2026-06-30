@@ -1,67 +1,109 @@
-// --- 1. DOM Elements ---
+// --- 1. DOM Elements & State ---
 const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
+const genreSelect = document.getElementById('genre-select'); 
+const yearInput = document.getElementById('year-input');     
 const movieGrid = document.getElementById('movie-grid');
 
+// Pagination Elements
+const prevBtn = document.getElementById('prev-page');
+const nextBtn = document.getElementById('next-page');
+const pageIndicator = document.getElementById('page-indicator');
+
+// Application State
+let currentPage = 1;
+let totalPages = 1; 
+let currentMoviesList = [];
+
 // --- 2. Event Listeners ---
-// Listen for the form submission (clicking the button or hitting Enter)
 searchForm.addEventListener('submit', (e) => {
-    e.preventDefault(); // Prevents the page from refreshing
-    const searchTerm = searchInput.value.trim();
-    
-    if (searchTerm) {
-        fetchMovies(searchTerm);
+    e.preventDefault(); 
+    currentPage = 1; 
+    triggerSearch();
+});
+
+prevBtn.addEventListener('click', () => {
+    if (currentPage > 1) {
+        currentPage--;
+        triggerSearch();
+        window.scrollTo({ top: 0, behavior: 'smooth' }); 
     }
 });
 
+nextBtn.addEventListener('click', () => {
+    if (currentPage < totalPages) {
+        currentPage++;
+        triggerSearch();
+        window.scrollTo({ top: 0, behavior: 'smooth' }); 
+    }
+});
+
+function triggerSearch() {
+    const searchTerm = searchInput.value.trim();
+    const genreId = genreSelect.value;
+    const releaseYear = yearInput.value.trim();
+    
+    if (searchTerm || genreId || releaseYear) {
+        fetchMovies(searchTerm, genreId, releaseYear, currentPage);
+    }
+}
+
 // --- 3. Fetch Logic ---
-// Async function to grab data from our secure Cloudflare backend
-async function fetchMovies(query) {
-    // Clear the grid and show a loading state
+async function fetchMovies(query, genre, year, page) {
     movieGrid.innerHTML = '<p>Loading movies...</p>';
     
     try {
-        // Construct the URL to hit our OWN backend function, passing the query
-        const url = `/movies?q=${encodeURIComponent(query)}`;
+        const url = `/movies?q=${encodeURIComponent(query)}&genre=${genre}&year=${year}&page=${page}`;
         
-        // Make the request to our Cloudflare backend
         const response = await fetch(url);
         const data = await response.json();
         
-        // Pass the results to our rendering function
-        if (data.results) {
-            renderMovies(data.results);
+        if (data.results && data.results.length > 0) {
+            totalPages = data.total_pages; 
+            currentMoviesList = data.results;
+            updatePaginationUI();          
+            renderMovies(currentMoviesList);
         } else {
             movieGrid.innerHTML = '<p>No movies found.</p>';
+            disablePagination();
         }
         
     } catch (error) {
         console.error("Error fetching data:", error);
         movieGrid.innerHTML = '<p>Something went wrong. Please try again later.</p>';
+        disablePagination();
     }
 }
 
+// --- Pagination UI Helpers ---
+function updatePaginationUI() {
+    pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage === totalPages;
+}
+
+function disablePagination() {
+    pageIndicator.textContent = 'Page 1';
+    prevBtn.disabled = true;
+    nextBtn.disabled = true;
+}
+
 // --- 4. Render Logic ---
-// Function to build the HTML for each movie card
 function renderMovies(movies) {
-    // If no movies come back, show a friendly message
     if (movies.length === 0) {
         movieGrid.innerHTML = '<p>No movies found. Try another search!</p>';
         return;
     }
 
-    // Map through the array of movies and create an HTML string for each
-    const htmlString = movies.map(movie => {
-        // Handle movies that might not have a poster image
+    const htmlString = movies.map((movie, index) => {
         const imagePath = movie.poster_path 
             ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
             : 'https://via.placeholder.com/500x750?text=No+Image';
             
-        // Extract just the year from the release_date (e.g., "2023-10-24" -> "2023")
         const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'Unknown Year';
 
         return `
-            <div class="movie-card">
+            <div class="movie-card" onclick="openModal(${index})">
                 <img src="${imagePath}" alt="${movie.title} Poster">
                 <div class="movie-info">
                     <h3 class="movie-title">${movie.title}</h3>
@@ -69,8 +111,42 @@ function renderMovies(movies) {
                 </div>
             </div>
         `;
-    }).join(''); // Join the array of strings into one big block of HTML
+    }).join(''); 
 
-    // Inject the final HTML into the grid
     movieGrid.innerHTML = htmlString;
 }
+
+// --- 5. Modal Logic ---
+const modal = document.getElementById('movie-modal');
+const closeModalBtn = document.getElementById('close-modal');
+const modalImg = document.getElementById('modal-img');
+const modalTitle = document.getElementById('modal-title');
+const modalMeta = document.getElementById('modal-meta');
+const modalOverview = document.getElementById('modal-overview');
+
+function openModal(index) {
+    const movie = currentMoviesList[index];
+    
+    modalImg.src = movie.poster_path 
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
+        : 'https://via.placeholder.com/500x750?text=No+Image';
+        
+    modalTitle.textContent = movie.title;
+    
+    const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'Unknown Year';
+    modalMeta.textContent = `${releaseYear} • ⭐ ${movie.vote_average.toFixed(1)}`;
+    
+    modalOverview.textContent = movie.overview || "No plot overview available for this movie.";
+    
+    modal.classList.remove('hidden');
+}
+
+closeModalBtn.addEventListener('click', () => {
+    modal.classList.add('hidden');
+});
+
+window.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        modal.classList.add('hidden');
+    }
+});

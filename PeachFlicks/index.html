@@ -8,13 +8,11 @@
 </head>
 <body>
 
-    <!-- Header and Branding -->
     <header class="app-header">
         <h1>🍑 PeachFlicks</h1>
         <p>Discover your next favorite movie.</p>
     </header>
 
-    <!-- Search and Filter Controls -->
     <section class="controls-container">
         <form id="search-form" class="search-form">
             <input type="text" id="search-input" placeholder="Search by movie title..." autocomplete="off">
@@ -34,25 +32,35 @@
         </form>
     </section>
 
-    <!-- Movie Grid Output -->
     <main class="movie-container">
         <div id="movie-grid" class="movie-grid">
-            <!-- JavaScript will inject movie cards here -->
-        </div>
+            </div>
     </main>
 
-    <!-- Pagination Controls -->
     <section class="pagination-container">
         <button id="prev-page" class="btn-pagination" disabled>Previous</button>
         <span id="page-indicator">Page 1</span>
         <button id="next-page" class="btn-pagination" disabled>Next</button>
     </section>
 
-    <!-- Required TMDB Attribution -->
     <footer class="app-footer">
         <img src="https://www.themoviedb.org/assets/2/v4/logos/v2/blue_short-8e7b30f73a4020692ccca9c88bafe5dcb6f8a62a4c6bc55cd9ba82bb2cd95f6c.svg" alt="TMDB Logo" class="tmdb-logo">
         <p>This product uses the TMDB API but is not endorsed or certified by TMDB.</p>
     </footer>
+
+    <div id="movie-modal" class="modal hidden">
+        <div class="modal-content">
+            <span id="close-modal" class="close-btn">&times;</span>
+            <div class="modal-body">
+                <img id="modal-img" src="" alt="Movie Poster">
+                <div class="modal-info">
+                    <h2 id="modal-title">Movie Title</h2>
+                    <p id="modal-meta">2024 • ⭐ 8.5</p>
+                    <p id="modal-overview">Plot overview goes here...</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script src="app.js"></script>
 </body>
