@@ -5,15 +5,13 @@ const genreSelect = document.getElementById('genre-select');
 const yearInput = document.getElementById('year-input');     
 const movieGrid = document.getElementById('movie-grid');
 
-// Pagination Elements
 const prevBtn = document.getElementById('prev-page');
 const nextBtn = document.getElementById('next-page');
 const pageIndicator = document.getElementById('page-indicator');
 
-// Application State
 let currentPage = 1;
 let totalPages = 1; 
-let currentMoviesList = [];
+let currentMoviesList = []; 
 
 // --- 2. Event Listeners ---
 searchForm.addEventListener('submit', (e) => {
@@ -60,7 +58,7 @@ async function fetchMovies(query, genre, year, page) {
         
         if (data.results && data.results.length > 0) {
             totalPages = data.total_pages; 
-            currentMoviesList = data.results;
+            currentMoviesList = data.results; 
             updatePaginationUI();          
             renderMovies(currentMoviesList);
         } else {
@@ -75,7 +73,6 @@ async function fetchMovies(query, genre, year, page) {
     }
 }
 
-// --- Pagination UI Helpers ---
 function updatePaginationUI() {
     pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
     prevBtn.disabled = currentPage === 1;
@@ -124,22 +121,25 @@ const modalTitle = document.getElementById('modal-title');
 const modalMeta = document.getElementById('modal-meta');
 const modalOverview = document.getElementById('modal-overview');
 
-function openModal(index) {
+// Global function to open the modal
+window.openModal = function(index) {
     const movie = currentMoviesList[index];
+    if (!movie) return; 
     
     modalImg.src = movie.poster_path 
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` 
         : 'https://via.placeholder.com/500x750?text=No+Image';
         
-    modalTitle.textContent = movie.title;
+    modalTitle.textContent = movie.title || "Title Unknown";
     
     const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'Unknown Year';
-    modalMeta.textContent = `${releaseYear} • ⭐ ${movie.vote_average.toFixed(1)}`;
+    const rating = movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A';
+    modalMeta.textContent = `${releaseYear} • ⭐ ${rating}`;
     
     modalOverview.textContent = movie.overview || "No plot overview available for this movie.";
     
     modal.classList.remove('hidden');
-}
+};
 
 closeModalBtn.addEventListener('click', () => {
     modal.classList.add('hidden');
