@@ -18,7 +18,7 @@
     <section class="controls-container">
         <form id="search-form" class="search-form">
             <input type="text" id="search-input" placeholder="Search by movie title..." autocomplete="off">
-            
+
             <select id="genre-select">
                 <option value="">All Genres</option>
                 <option value="28">Action</option>
@@ -29,7 +29,7 @@
             </select>
 
             <input type="number" id="year-input" placeholder="Year (e.g. 2024)" min="1900" max="2027">
-            
+
             <button type="submit" id="search-btn">Find Movies</button>
         </form>
     </section>
@@ -47,6 +47,17 @@
         <span id="page-indicator">Page 1</span>
         <button id="next-page" class="btn-pagination" disabled>Next</button>
     </section>
+
+    <!-- Movie Details Modal -->
+    <div id="movie-modal" class="movie-modal" aria-hidden="true">
+        <div class="movie-modal-backdrop" data-close-modal></div>
+        <section class="movie-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="movie-modal-title">
+            <button id="movie-modal-close" class="movie-modal-close" type="button" aria-label="Close movie details">&times;</button>
+            <div id="movie-modal-content" class="movie-modal-content">
+                <p>Loading movie details...</p>
+            </div>
+        </section>
+    </div>
 
     <!-- Required TMDB Attribution -->
     <footer class="app-footer">
